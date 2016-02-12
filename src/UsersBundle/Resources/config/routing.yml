@@ -1,0 +1,23 @@
+users_homepage:
+    pattern: /
+    defaults: { _controller: UsersBundle:Users:index }
+    requirements:
+        _method: GET      
+users_details:
+    pattern: /user/{userId}
+    defaults: { _controller: UsersBundle:Users:getUserDetails }
+    requirements:
+        _method: GET
+        userId: (\d+)
+users_edit:
+    pattern: /edit/{userId}
+    defaults: { _controller: UsersBundle:Users:edit }
+    requirements:
+        _method: GET
+        userId: (\d+)
+users_save:
+    pattern: /edit/{userId}
+    defaults: { _controller: UsersBundle:Users:edit }
+    requirements:
+        _method: POST
+        userId: (\d+)

@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+{% block pageContent %}
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <p class="lead"><a href="/users/web">Users</a></p>
+                <div class="list-group">
+                    <a href="/users/web/?gender=m" class="list-group-item">Male</a>
+                    <a href="/users/web/?gender=f" class="list-group-item">Female</a>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="row">
+                    
+                    <div style="margin-bottom: 10px;margin-left:29px;">
+                    <form method ="get" action="/users/web">
+                        <input type="text" name="name"/>
+                        <button type="submit">Search First Name</button>
+                    </form>
+                    </div>
+                    {% if users.errors is defined %}
+                        {% for error in users.errors %}
+                            <p class="error">{{error}}</p>
+                        {% endfor %}
+                                             
+                    {% else %}                   
+                    <p class="col-lg-4">User details</p>                  
+                    </div>
+                            
+                    <div class="col-sm-4 col-lg-4 col-md-4">
+                            <div class="caption">
+                                {{ form_start(form) }}
+                                {{ form_widget(form) }}
+                                {{ form_end(form) }}
+                            </div>
+                    </div>
+                {% endif %}    
+                   
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}
+

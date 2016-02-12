@@ -1,0 +1,8 @@
+monolog:
+    handlers:
+        user:
+            type:     stream
+            path:     "%kernel.logs_dir%/profile.log"
+            channels: user
+
+            
