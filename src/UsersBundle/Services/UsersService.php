@@ -93,14 +93,14 @@ class UsersService implements UsersServiceInterface
      */
     public function updateUser(User $user)
     {
-//        $errors = $this->validator->validate($user);
-//        if (count($errors) > 0){
-//            $result['errors'] = array();
-//            foreach($errors as $error) {
-//                array_push($result['errors'], $error->getMessage());
-//            }
-//            return $result;
-//        }
+        $errors = $this->validator->validate($user);
+        if (count($errors) > 0){
+            $result['errors'] = array();
+            foreach($errors as $error) {
+                array_push($result['errors'], $error->getMessage());
+            }
+            return $result;
+        }
         
         $updated = $this->DAO->updateUser($user);
         //to do refresh user cache if updated using event dispatcher
