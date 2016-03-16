@@ -1,3 +1,11 @@
+search:
+    resource: "@SearchBundle/Resources/config/routing.yml"
+    prefix:   /search
+
+users_list:
+    resource: "@ListBundle/Resources/config/routing.yml"
+    prefix:   /list
 users:
-    resource: "@UsersBundle/Resources/config/routing.yml"
-    prefix:   /
+  resource: "@UsersBundle/Controller/"
+  type:     annotation
+  prefix:   /

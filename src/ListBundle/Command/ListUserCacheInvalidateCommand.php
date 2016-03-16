@@ -1,5 +1,5 @@
 <?php
-namespace UsersBundle\Command;
+namespace ListBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @author ptanco
  */
-class UserCacheInvalidateCommand extends ContainerAwareCommand
+class ListUserCacheInvalidateCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -23,14 +23,14 @@ class UserCacheInvalidateCommand extends ContainerAwareCommand
     {
         $userId = $input->getArgument('userId');
         $output->writeln('Start invalidate cache for user: '.$userId);
-        
+
         $cache = $this->getContainer()->get('users.users_service_cache');
         try{
             $cache->invalidateCache($userId);
         } catch (Exception $ex) {
             throw $ex;
         }
-        
+
         $output->writeln('Invalidate cache successfully');
     }
 }

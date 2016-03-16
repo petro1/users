@@ -1,0 +1,19 @@
+services:
+    search_service:
+        class: SearchBundle\Services\SearchService
+        arguments:
+            - @search_dao
+            - @validator
+    search_dao:
+        class: SearchBundle\DAO\SearchDAO
+        arguments:
+            - @doctrine.dbal.default_connection
+    search_cache:
+        class: SearchBundle\Services\UsersCacheDecorator
+        arguments:
+            - @liip_doctrine_cache.ns.users_cache
+            - @search_service
+            - %cacheTTL%
+parameters:
+    cacheTTL: 1000
+            

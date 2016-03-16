@@ -20,6 +20,8 @@ class AppKernel extends Kernel
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new UsersBundle\UsersBundle(),
             new Liip\DoctrineCacheBundle\LiipDoctrineCacheBundle(),
+            new SearchBundle\SearchBundle(),
+            new ListBundle\ListBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

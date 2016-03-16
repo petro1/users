@@ -1,0 +1,26 @@
+services:
+    users.users_list_service:
+        class: ListBundle\Services\UsersService
+        arguments: 
+            - @users.users_list_dao
+            - @validator
+        calls:
+            - [setEventDispatcher, [@event_dispatcher]]
+    users.users_service_cache:
+        class: ListBundle\Services\UsersCacheDecorator
+        arguments: 
+            - @users.users_list_service
+            - @liip_doctrine_cache.ns.users_cache
+        calls:
+            - [setCacheTTL, [%users.cacheTTL%]]
+    users.users_list_dao:
+        class: ListBundle\Services\UsersDAO
+        arguments: [@doctrine.dbal.default_connection]
+    users.user_call_listener:
+        class: ListBundle\Listener\UserCallListener
+        calls:
+            - [setLogger, [@logger]]
+        tags:
+            - {name: kernel.event_subscriber}
+            - {name: monolog.logger, channel: user}
+        

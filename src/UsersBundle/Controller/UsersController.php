@@ -1,99 +1,248 @@
 <?php
+
 namespace UsersBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use UsersBundle\Entity\Users;
+use UsersBundle\Form\UsersType;
 
-use UsersBundle\Criteria\UsersCriteria;
-use UsersBundle\Entities\User;
-
+/**
+ * Users controller.
+ *
+ */
 class UsersController extends Controller
 {
-    /*
-     * Home page
-     * @param Request
-     * @param String $name
-     * @param int $page
-     * @param int $per_page
-     * @return view
-     */
-    public function indexAction(Request $request)
-    {
-        $service = $this->get('users.users_list_service');
-        $criteria = new UsersCriteria;
-        $criteria->setFirstName($request->get('name'));
-        $criteria->setPerPage($request->get('perPage'));
-        $criteria->setPage($request->get('page'));
-        $criteria->setSex($request->get('gender'));        
 
-        try {
-            $users = $service->getUsersList($criteria);
-        } catch (\Exception $ex) {
-            throw $ex;
+    public function __construct()
+    {
+        echo'construct';
+    }
+    /**
+     * Lists all Users entities.
+     *
+     * @Route("/", name="users")
+     * @Method("GET")
+     * @Template()
+     */
+    public function indexAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entities = $em->getRepository('UsersBundle:Users')->findAll();
+        return $this->render('UsersBundle:Users:index.html.twig',
+            array('entities' => $entities));
+    }
+    /**
+     * Creates a new Users entity.
+     *
+     * @Route("/", name="users_create")
+     * @Method("POST")
+     * @Template("UsersBundle:Users:new.html.twig")
+     */
+    public function createAction(Request $request)
+    {
+        $entity = new Users();
+        $form = $this->createCreateForm($entity);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($entity);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('users_show', array('id' => $entity->getId())));
         }
 
-        return $this->render('UsersBundle:Users:index.html.twig', 
-            array('users' => $users, 'currentPage' => $criteria->getPage()));
+        return array(
+            'entity' => $entity,
+            'form'   => $form->createView(),
+        );
     }
 
-     /*
-     * Users details get cache data or query db
-     * @param int $userId
-     * @return view
+    /**
+     * Creates a form to create a Users entity.
+     *
+     * @param Users $entity The entity
+     *
+     * @return \Symfony\Component\Form\Form The form
      */
-    public function getUserDetailsAction($userId)
-    {        
-        $service = $this->get('users.users_service_cache');
-        try {
-            $userDetails = $service->getUserDetails($userId);
-        } catch (\Exception $ex) {
-            throw $ex;
-        }
-
-        return $this->render('UsersBundle:Users:details.html.twig',
-            array('userDetails' => $userDetails));
-    }
-
-    /*
-     * Users details get cache data or query db
-     * @param int $userId
-     * @return view
-     */
-    public function editAction($userId)
+    private function createCreateForm(Users $entity)
     {
-        $request = $this->get('request');
-        $service = $this->get('users.users_list_service');
-
-        try {
-            $userDetails = $service->getUserDetails($userId);
-        } catch (\Exception $ex) {
-            throw $ex;
-        }
-        
-        $user = new User();
-        $user->setFirstName($userDetails['first_name']);
-        $user->setLastName($userDetails['last_name']);
-
-        $form = $this->createFormBuilder($user)
-            ->add('first_name', 'text')
-            ->add('last_name', 'text')
-            ->add('save', 'submit', array('label' => 'Update'))
-            ->getForm();
-        if ($request->getMethod() == 'POST') {
-            $form->handleRequest($request);
-                if ($form->isSubmitted() && $form->isValid()) {
-                    $user = new User;
-                    $user->setId($userId);
-                    $user->setFirstName($form["first_name"]->getData());
-                    $user->setLastName($form["last_name"]->getData());
-                    $service->updateUser($user);
-
-             return $this->redirectToRoute('users_homepage');
-            }
-        }
-
-        return $this->render('UsersBundle:Users:edit.html.twig', array(
-            'form' => $form->createView(),
+        $form = $this->createForm(new UsersType(), $entity, array(
+            'action' => $this->generateUrl('users_create'),
+            'method' => 'POST',
         ));
+
+        $form->add('submit', 'submit', array('label' => 'Create'));
+
+        return $form;
+    }
+
+    /**
+     * Displays a form to create a new Users entity.
+     *
+     * @Route("/new", name="users_new")
+     * @Method("GET")
+     * @Template()
+     */
+    public function newAction()
+    {
+        $entity = new Users();
+        $form   = $this->createCreateForm($entity);
+
+        return array(
+            'entity' => $entity,
+            'form'   => $form->createView(),
+        );
+    }
+
+    /**
+     * Finds and displays a Users entity.
+     *
+     * @Route("/{id}", name="users_show")
+     * @Method("GET")
+     * @Template()
+     */
+    public function showAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('UsersBundle:Users')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Users entity.');
+        }
+
+        $deleteForm = $this->createDeleteForm($id);
+
+        return array(
+            'entity'      => $entity,
+            'delete_form' => $deleteForm->createView(),
+        );
+    }
+
+    /**
+     * Displays a form to edit an existing Users entity.
+     *
+     * @Route("/{id}/edit", name="users_edit")
+     * @Method("GET")
+     * @Template()
+     */
+    public function editAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('UsersBundle:Users')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Users entity.');
+        }
+
+        $editForm = $this->createEditForm($entity);
+        $deleteForm = $this->createDeleteForm($id);
+
+        return array(
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        );
+    }
+
+    /**
+    * Creates a form to edit a Users entity.
+    *
+    * @param Users $entity The entity
+    *
+    * @return \Symfony\Component\Form\Form The form
+    */
+    private function createEditForm(Users $entity)
+    {
+        $form = $this->createForm(new UsersType(), $entity, array(
+            'action' => $this->generateUrl('users_update', array('id' => $entity->getId())),
+            'method' => 'PUT',
+        ));
+
+        $form->add('submit', 'submit', array('label' => 'Update'));
+
+        return $form;
+    }
+    /**
+     * Edits an existing Users entity.
+     *
+     * @Route("/{id}", name="users_update")
+     * @Method("PUT")
+     * @Template("UsersBundle:Users:edit.html.twig")
+     */
+    public function updateAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('UsersBundle:Users')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Users entity.');
+        }
+
+        $deleteForm = $this->createDeleteForm($id);
+        $editForm = $this->createEditForm($entity);
+        $editForm->handleRequest($request);
+
+        if ($editForm->isValid()) {
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('users_edit', array('id' => $id)));
+        }
+
+        return array(
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        );
+    }
+    /**
+     * Deletes a Users entity.
+     *
+     * @Route("/{id}", name="users_delete")
+     * @Method("DELETE")
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $form = $this->createDeleteForm($id);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $entity = $em->getRepository('UsersBundle:Users')->find($id);
+
+            if (!$entity) {
+                throw $this->createNotFoundException('Unable to find Users entity.');
+            }
+
+            $em->remove($entity);
+            $em->flush();
+        }
+
+        return $this->redirect($this->generateUrl('users'));
+    }
+
+    /**
+     * Creates a form to delete a Users entity by id.
+     *
+     * @param mixed $id The entity id
+     *
+     * @return \Symfony\Component\Form\Form The form
+     */
+    private function createDeleteForm($id)
+    {
+        return $this->createFormBuilder()
+            ->setAction($this->generateUrl('users_delete', array('id' => $id)))
+            ->setMethod('DELETE')
+            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->getForm()
+        ;
     }
 }
