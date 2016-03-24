@@ -14,6 +14,11 @@
         "doctrine/orm": "~2.2,>=2.2.3,<2.5",
         "doctrine/dbal": "<2.5",
         "doctrine/doctrine-bundle": "~1.2",
+        "guzzle/guzzle": "3.9.*",
+        "yohang/finite": "~1.1",
+        "nelmio/api-doc-bundle": "2.10.*",
+        "jms/serializer-bundle": "0.13.*",
+        "hoa/ruler": "0.14.09.16",
         "twig/extensions": "~1.0",
         "symfony/assetic-bundle": "~2.3",
         "symfony/swiftmailer-bundle": "~2.3",
@@ -29,7 +34,15 @@
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3",
-        "phpunit/phpunit": "~4.3"
+        "sensio/generator-bundle"     : "~2.3",
+        "behat/behat"                 : "2.5.*@stable",
+        "behat/symfony2-extension"    : "*",
+        "behat/mink-extension"        : "*",
+        "behat/mink-browserkit-driver": "*",
+        "covex-nn/phpcb"            : "1.*",
+        "playbloom/guzzle-bundle"   : "1.*",
+        "phpmd/phpmd"               : "2.*",
+        "phpunit/phpunit"           : "4.7.*"
     },
     "scripts": {
         "post-root-package-install": [

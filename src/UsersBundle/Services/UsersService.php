@@ -9,6 +9,8 @@ use UsersBundle\Events\UserDetailsEvent;
 use Symfony\Component\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints\Type as TypeConstraint;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+//use Guzzle\Http\Client as GuzzleClient;
+//use Guzzle\Http\Exception\RequestException;
 
 /**
  * Description of UsersService
@@ -104,5 +106,18 @@ class UsersService implements UsersServiceInterface
         
         $updated = $this->DAO->updateUser($user);
         //to do refresh user cache if updated using event dispatcher
+
+//    $request = $this->httpClient->post(
+//            self::POST_MESSAGE_ROUTE,
+//            array('Accept' => 'application/json'),
+//            $body,
+//            array()
+//        );
+//        try {
+//            $request->send();
+//        } catch (RequestException $e) {
+//            throw $e;
+//        }
     }
+
 }
